@@ -1,0 +1,13 @@
+<%- include('header') -%>
+
+<ul>
+  <% if (categories) { %>
+    <% for (const category of categories) { %>
+      <li><a href="/spurningar/<%= category.name %>"><%= category.name %></a></li>
+    <% } %>
+  <% } else { %>
+    <li>No categories available</li>
+  <% } %>
+</ul>
+
+<%- include('footer') -%>
