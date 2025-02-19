@@ -1,11 +1,56 @@
 <%- include('header') -%>
 
-<form method="post" action="/form">
+<form id="Form" action="/form" method="POST">
+  <label for="category">Select Category:</label>
+  <select id="category" name="category_id">
+    <option value="">-- Select an existing category --</option>
+    <% categories.forEach(function(category) { %>
+      <option value="<%= category.id %>"><%= category.name %></option>
+    <% }); %>
+  </select>
 
-  <label for="name">Flokkur:</label>
-  <input type="text" id="name" name="name">
-  <button type="submit">Búa til flokk</button>
+  <label for="new_category">Or add a new category:</label>
+  <input type="text" id="new_category" name="new_category" placeholder="New category name">
+  <br>
 
+  <label for="question">Enter Question:</label>
+  <input type="text" id="question" name="question_text" required>
+  <br>
+
+  <div id="answersContainer">
+    <label>Answers:</label>
+    <div class="answer">
+      <input type="text" name="answers[]" required>
+      <input type="radio" name="correct_answer" value="0" required> Correct
+      <button type="button" class="removeAnswer">Remove</button>
+    </div>
+  </div>
+
+  <button type="button" id="addAnswer">Add Answer</button>
+
+  <button type="submit">Submit</button>
 </form>
+
+<script>
+  document.getElementById('addAnswer').addEventListener('click', function() {
+    const container = document.getElementById('answersContainer');
+    const index = container.children.length; 
+
+    const answerDiv = document.createElement('div');
+    answerDiv.classList.add('answer');
+    answerDiv.innerHTML = `
+      <input type="text" name="answers[]" required>
+      <input type="radio" name="correct_answer" value="${index}" required> Correct
+      <button type="button" class="removeAnswer">Remove</button>
+    `;
+    
+    container.appendChild(answerDiv);
+
+    answerDiv.querySelector('.removeAnswer').addEventListener('click', function() {
+      answerDiv.remove();
+    });
+  });
+</script>
+
 
 <%- include('footer') -%>

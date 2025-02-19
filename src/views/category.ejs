@@ -13,8 +13,15 @@
         <legend><%= item.question_text %></legend>
         <% currentQuestion = item.question_id; %>
     <% } %>
-    <label>
-      <input type="radio" name="answer_<%= item.question_id %>" value="<%= item.answer_id %>">
+    <%
+      let isCorrect = results && results[item.question_id] && results[item.question_id].isCorrect;
+      let isSelected = results && results[item.question_id] && results[item.question_id].selectedAnswer == item.answer_id;
+      let isRightAnswer = results && results[item.question_id] && results[item.question_id].correctAnswer == item.answer_id;
+      let answerClass = isSelected ? (isCorrect ? "answer--correct" : "answer--incorrect") : (isRightAnswer ? "answer--correct" : "");
+    %>
+
+    <label class="answer <%= answerClass %>">
+      <input type="radio" name="answer_<%= item.question_id %>" value="<%= item.answer_id %>" <% if (isSelected) { %> checked <% } %> >
       <%= item.answer_text %>
     </label><br>
   <% }); %>

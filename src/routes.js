@@ -15,31 +15,54 @@ router.get('/spurningar/:category', async (req, res) => {
   // TEMP EKKI READY FOR PROD
   const title = req.params.category;
   const questions = await qAndAFromDatabase(title);
-  res.render(`category`, { title, questions });
+
+  res.render(`category`, { title, questions, results: {} });
 });
 
-router.get('/form', (req, res) => {
-  res.render('form', { title: 'Búa til flokk' });
+router.get('/form', async (req, res) => {
+  const categories = await categoriesFromDatabase();
+  res.render('form', { title: 'Búa til flokk', categories: categories });
 });
 
 router.post('/spurningar/:category', async (req, res) => {
-  const answers = req.body;
-  let score = 0;
+  const userAnswers = req.body;
+  const title = req.params.category;
+  let results = {};
 
-  for (const key in answers) {
-    const answerId = answers[key];
-    const result = await query('SELECT is_correct FROM answers WHERE id = $1', [answerId]);
+  const questions = await qAndAFromDatabase(title);
 
-    if (result.rows[0].is_correct) {
-      score++;
+  for (const key in userAnswers) {
+    const answerId = userAnswers[key];
+
+    // Fetch the answer and check if it's correct
+    const result = await query('SELECT question_id, is_correct FROM answers WHERE id = $1', [answerId]);
+
+    if (result.rows.length > 0) {
+      const { question_id, is_correct } = result.rows[0];
+
+      // Store the correctness per question
+      results[question_id] = {
+        selectedAnswer: answerId,
+        isCorrect: is_correct
+      };
     }
   }
 
+  // Fetch all correct answers for each question to ensure the right answer is always highlighted
+  const correctAnswers = await query('SELECT question_id, id FROM answers WHERE is_correct = TRUE');
+
+  correctAnswers.rows.forEach(row => {
+    if (!results[row.question_id]) {
+      results[row.question_id] = {};
+    }
+    results[row.question_id].correctAnswer = row.id;
+  });
+
+  res.render("category", { title, questions, results });
 });
 
 router.post('/form', async(req, res) => {
-  const { name } = req.body;
-  console.log('Name: ', name);
+  const { category_id, new_category, question_text, answers, correct_answer } = req.body;
 
   // validation, what if name is empty?
   // what if sql injection? or something malicious?
@@ -57,9 +80,31 @@ router.post('/form', async(req, res) => {
   const db = new Database(env.connectionString, logger);
   db.open();
 
-  const result = await db.query('INSERT INTO categories (name) VALUES ($1)', [name]);
+  let categoryId = category_id;
 
-  console.log('Result: ', result);
+  // If user added a new category
+  if (new_category && new_category.trim() !== "") {
+    const newCatRes = await db.query(
+      "INSERT INTO categories (name) VALUES ($1) RETURNING id",
+      [new_category.trim()]
+    );
+    categoryId = newCatRes.rows[0].id;
+  }
 
-  res.render('form-created', { title: 'Flokkur búinn til' });
+  // Insert Question
+  const questionRes = await db.query(
+    "INSERT INTO questions (category_id, question_text) VALUES ($1, $2) RETURNING id",
+    [categoryId, question_text]
+  );
+  const questionId = questionRes.rows[0].id;
+
+  // Insert Answers
+  for (let i = 0; i < answers.length; i++) {
+    await db.query(
+      "INSERT INTO answers (question_id, answer_text, is_correct) VALUES ($1, $2, $3)",
+      [questionId, answers[i], i == correct_answer]
+    );
+  }
+
+  res.render('question-created', { title: 'Spurning búinn til' });
 });
