@@ -1,56 +1,46 @@
 <%- include('header') -%>
 
+<!-- Show Validation Errors -->
+<% if (errors && errors.length > 0) { %>
+  <div class="error-container">
+    <ul>
+      <% errors.forEach(error => { %>
+        <li class="error-message"><%= error.msg %></li>
+      <% }); %>
+    </ul>
+  </div>
+<% } %>
+
 <form id="Form" action="/form" method="POST">
-  <label for="category">Select Category:</label>
+  <label for="category">Flokkur:</label>
   <select id="category" name="category_id">
-    <option value="">-- Select an existing category --</option>
+    <option value="">-- Veldur Flokk --</option>
     <% categories.forEach(function(category) { %>
       <option value="<%= category.id %>"><%= category.name %></option>
     <% }); %>
   </select>
 
-  <label for="new_category">Or add a new category:</label>
+  <label for="new_category">Bæta við nýjum flokk:</label>
   <input type="text" id="new_category" name="new_category" placeholder="New category name">
   <br>
 
-  <label for="question">Enter Question:</label>
-  <input type="text" id="question" name="question_text" required>
+  <label for="question">Spurning:</label>
+  <input type="text" id="question" name="question_text">
   <br>
 
   <div id="answersContainer">
-    <label>Answers:</label>
+    <label>Svör:</label>
     <div class="answer">
       <input type="text" name="answers[]" required>
-      <input type="radio" name="correct_answer" value="0" required> Correct
-      <button type="button" class="removeAnswer">Remove</button>
+      <input type="radio" name="correct_answer" value="0" required> Rétt Svar
     </div>
   </div>
 
-  <button type="button" id="addAnswer">Add Answer</button>
+  <button type="button" id="addAnswer">Bæta við svarmöguleikum</button>
 
-  <button type="submit">Submit</button>
+  <button type="submit">Staðfesta</button>
 </form>
 
-<script>
-  document.getElementById('addAnswer').addEventListener('click', function() {
-    const container = document.getElementById('answersContainer');
-    const index = container.children.length; 
-
-    const answerDiv = document.createElement('div');
-    answerDiv.classList.add('answer');
-    answerDiv.innerHTML = `
-      <input type="text" name="answers[]" required>
-      <input type="radio" name="correct_answer" value="${index}" required> Correct
-      <button type="button" class="removeAnswer">Remove</button>
-    `;
-    
-    container.appendChild(answerDiv);
-
-    answerDiv.querySelector('.removeAnswer').addEventListener('click', function() {
-      answerDiv.remove();
-    });
-  });
-</script>
-
+<script src="/newQuestion.js"></script>
 
 <%- include('footer') -%>
