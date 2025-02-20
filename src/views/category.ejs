@@ -1,27 +1,36 @@
 <%- include('header') -%>
-  
-<h1><%= title %> Spurningar</h1>
 
 <section class="question">
+  <% let questionNo = 0 %>
   <% let currentQuestion = null; %>
+
   <% questions.forEach((item, index) => { %>
+
     <% if (currentQuestion !== item.question_id) { %>
       <% if (currentQuestion !== null) { %>
-        </fieldset>
+        </div>
       <% } %>
-      <fieldset>
-        <legend><%= item.question_text %></legend>
+      <% questionNo++ %>
+      <h2>Spurning <%= questionNo %></h2>
+      <div class="question__text"><p><%= item.question_text %></p></div>
+      <div class="question__form">
         <% currentQuestion = item.question_id; %>
     <% } %>
 
-    <label class="answer" data-correct="<%= item.is_correct %>">
-      <input type="radio" name="answer_<%= item.question_id %>" value="<%= item.answer_id %>">
-      <%= item.answer_text %>
-   </label><br>
+    <div class="answer">
+      <input 
+        class="answer__input" 
+        data-correct="<%= item.is_correct %>" 
+        type="radio" 
+        name="answer_<%= item.question_id %>" 
+        value="<%= item.answer_id %>"
+      />
+      <label class="answer__label"><%= item.answer_text %></label>
+    </div>
   <% }); %>
-  
+
   <% if (currentQuestion !== null) { %>
-    </fieldset>
+  </div>
   <% } %>
 
   <button id="submitAnswers">Submit Answers</button>

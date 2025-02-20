@@ -16,7 +16,7 @@ router.get('/spurningar/:category', async (req, res) => {
   const title = req.params.category;
   const questions = await qAndAFromDatabase(title);
 
-  res.render(`categoryTest`, { title, questions, results: {} });
+  res.render(`category`, { title, questions, results: {} });
 });
 
 router.get('/form', async (req, res) => {
