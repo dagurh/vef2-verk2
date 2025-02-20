@@ -2,7 +2,7 @@ console.log("checkAsnwers.js is connected");
 
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("submitAnswers").addEventListener("click", function() {
-    // Get all selected radio buttons
+
     const selectedAnswers = document.querySelectorAll("input[type='radio']:checked");
 
     selectedAnswers.forEach(answer => {
