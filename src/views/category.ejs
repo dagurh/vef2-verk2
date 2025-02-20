@@ -2,9 +2,9 @@
   
 <h1><%= title %> Spurningar</h1>
 
-<form action="/spurningar/<%= title %>" method="POST">
+<section class="question">
   <% let currentQuestion = null; %>
-  <% questions.forEach(function(item) { %>
+  <% questions.forEach((item, index) => { %>
     <% if (currentQuestion !== item.question_id) { %>
       <% if (currentQuestion !== null) { %>
         </fieldset>
@@ -13,25 +13,20 @@
         <legend><%= item.question_text %></legend>
         <% currentQuestion = item.question_id; %>
     <% } %>
-    <%
-      let isCorrect = results && results[item.question_id] && results[item.question_id].isCorrect;
-      let isSelected = results && results[item.question_id] && results[item.question_id].selectedAnswer == item.answer_id;
-      let isRightAnswer = results && results[item.question_id] && results[item.question_id].correctAnswer == item.answer_id;
-      let answerClass = isSelected ? (isCorrect ? "answer--correct" : "answer--incorrect") : (isRightAnswer ? "answer--correct" : "");
-    %>
 
-    <label class="answer <%= answerClass %>">
-      <input type="radio" name="answer_<%= item.question_id %>" value="<%= item.answer_id %>" <% if (isSelected) { %> checked <% } %> >
+    <label class="answer" data-correct="<%= item.is_correct %>">
+      <input type="radio" name="answer_<%= item.question_id %>" value="<%= item.answer_id %>">
       <%= item.answer_text %>
-    </label><br>
+   </label><br>
   <% }); %>
+  
   <% if (currentQuestion !== null) { %>
     </fieldset>
   <% } %>
 
-  <button type="submit">Submit Answers</button>
-</form>
+  <button id="submitAnswers">Submit Answers</button>
+</section>
 
-  
+<script src="/checkAnswers.js"></script>
 
 <%- include('footer') -%>

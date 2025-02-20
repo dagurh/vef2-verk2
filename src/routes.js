@@ -16,49 +16,12 @@ router.get('/spurningar/:category', async (req, res) => {
   const title = req.params.category;
   const questions = await qAndAFromDatabase(title);
 
-  res.render(`category`, { title, questions, results: {} });
+  res.render(`categoryTest`, { title, questions, results: {} });
 });
 
 router.get('/form', async (req, res) => {
   const categories = await categoriesFromDatabase();
   res.render('form', { title: 'Búa til flokk', categories: categories });
-});
-
-router.post('/spurningar/:category', async (req, res) => {
-  const userAnswers = req.body;
-  const title = req.params.category;
-  let results = {};
-
-  const questions = await qAndAFromDatabase(title);
-
-  for (const key in userAnswers) {
-    const answerId = userAnswers[key];
-
-    // Fetch the answer and check if it's correct
-    const result = await query('SELECT question_id, is_correct FROM answers WHERE id = $1', [answerId]);
-
-    if (result.rows.length > 0) {
-      const { question_id, is_correct } = result.rows[0];
-
-      // Store the correctness per question
-      results[question_id] = {
-        selectedAnswer: answerId,
-        isCorrect: is_correct
-      };
-    }
-  }
-
-  // Fetch all correct answers for each question to ensure the right answer is always highlighted
-  const correctAnswers = await query('SELECT question_id, id FROM answers WHERE is_correct = TRUE');
-
-  correctAnswers.rows.forEach(row => {
-    if (!results[row.question_id]) {
-      results[row.question_id] = {};
-    }
-    results[row.question_id].correctAnswer = row.id;
-  });
-
-  res.render("category", { title, questions, results });
 });
 
 router.post('/form', async(req, res) => {

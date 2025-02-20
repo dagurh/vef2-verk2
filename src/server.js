@@ -12,7 +12,7 @@ const path = dirname(fileURLToPath(import.meta.url));
 app.set('views', join(path, './views'));
 app.set('view engine', 'ejs');
 
-app.use('/', router);
+app.use('/', router, express.static('public'));
 
 const hostname = '127.0.0.1';
 const port = 3000;
