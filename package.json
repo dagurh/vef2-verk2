@@ -11,7 +11,7 @@
     "build:setup": "node ./src/setup.js",
     "start": "node ./src/server.js",
     "dev": "browser-sync start --serveStatic ./dist --server --files ./dist/*.* ./dist/*.*",
-    "dever": "node --env-file=.env --watch-path src src/server.js",
+    "dever": "node --env-file=.env --watch-path src src/devServer.js",
     "setup": "node --env-file=.env ./src/setup.js",
     "lint": "eslint src",
     "test": "node --test --experimental-test-module-mocks",

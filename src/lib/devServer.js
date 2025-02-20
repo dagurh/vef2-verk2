@@ -14,8 +14,9 @@ app.set('view engine', 'ejs');
 
 app.use('/', router, express.static('public'));
 
-const port = process.env.PORT || 3000;
+const hostname = '127.0.0.1';
+const port = 3000;
 
-app.listen(port, () => {
-  console.log(`Server running on port: ${port}/`);
+app.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
 });
